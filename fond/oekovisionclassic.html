@@ -3,9 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <title>ÖkoWorld ÖkoVision Classic Entwiklung</title>
-    <script src="parsehub/parsehub.js"></script>
+    <!--<script src="parsehub/parsehub.js"></script>-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
+        var request = require('request');
+        var base = 'https://www.parsehub.com';
+
+        /**
+         * Constructor - takes your ParseHub API key
+         */
+        function ParseHub(apiKey)
+        {
+            if (!apiKey)
+                throw Error('Please specify a ParseHub API key');
+
+            this._apiKey = apiKey;
+        }
+
+        ParseHub.prototype.runJob = function(params, callback)
+        {
+            var callback = callback || function(){};
+
+            if (!params || !params.token)
+                throw new Error('Please specify a job token');
+
+            params.api_key = this._apiKey;
+
+            request.post({
+                    url: base + '/api/scrapejob/run',
+                    formData: params
+                },
+                function(err, resp, body)
+                {
+                    if (resp.statusCode !== 200)
+                        return callback(new Error(body));
+
+                    try
+                    {
+                        var json = JSON.parse(body);
+                        callback(err, json.run_token);
+                    }
+                    catch (e)
+                    {
+                        callback(new Error('Could not parse response body'));
+                    }
+                });
+        }
+
         function calculateCurrenWorth() {
             var result, investment;
             var currentValue = 241.47;
