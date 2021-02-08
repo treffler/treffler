@@ -3,86 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <title>ÖkoWorld ÖkoVision Classic Entwiklung</title>
-    <!--<script src="parsehub/parsehub.js"></script>-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-        var request = require('request');
-        var base = 'https://www.parsehub.com';
-
-        /**
-         * Constructor - takes your ParseHub API key
-         */
-        function ParseHub(apiKey)
-        {
-            if (!apiKey)
-                throw Error('Please specify a ParseHub API key');
-
-            this._apiKey = apiKey;
-        }
-
-        ParseHub.prototype.runJob = function(params, callback)
-        {
-            var callback = callback || function(){};
-
-            if (!params || !params.token)
-                throw new Error('Please specify a job token');
-
-            params.api_key = this._apiKey;
-
-            request.post({
-                    url: base + '/api/scrapejob/run',
-                    formData: params
-                },
-                function(err, resp, body)
-                {
-                    if (resp.statusCode !== 200)
-                        return callback(new Error(body));
-
-                    try
-                    {
-                        var json = JSON.parse(body);
-                        callback(err, json.run_token);
-                    }
-                    catch (e)
-                    {
-                        callback(new Error('Could not parse response body'));
-                    }
-                });
-        }
-
+        var currentValue;
         function calculateCurrenWorth() {
             var result, investment;
-            var currentValue = 241.47;
+            //console.log("currentValue: " + currentValue);
             investment = document.getElementById('investment').value;
             result = (investment/231) * currentValue;
             document.getElementById('result').innerHTML = "aktueller Wert: " + result.toFixed(2)+"€";
             document.getElementById('increase').innerHTML = "Gewinn: " + (result-investment).toFixed(2)+"€";
 
         }
-        function initParseHub() {
-            var ParseHub = require('parsehub');
-            var api = new ParseHub(t3exedkXFroV);
-        }
 
-        function getCurrentWorth() {
-            api.runJob({ token: 'tjLsiuri4dwR' }, function(err, runToken)
-            {
-                console.log(runToken);
+
+        function getCurrentPrice() {
+            const settings = {
+                "async": true,
+                "crossDomain": true,
+                "url": "https://apidojo-yahoo-finance-v1.p.rapidapi.com/market/v2/get-quotes?region=DE&symbols=OE7A.F",
+                "method": "GET",
+                "headers": {
+                    "x-rapidapi-key": "620a665425msh47c1a91caca8c41p11f48bjsn8bc38d113262",
+                    "x-rapidapi-host": "apidojo-yahoo-finance-v1.p.rapidapi.com"
+                }
+            };
+
+            $.ajax(settings).done(function (response) {
+                //console.log(response);
+                //console.log(response.quoteResponse.result[0].regularMarketPrice);
+                currentValue = response.quoteResponse.result[0].regularMarketPrice;
+                document.getElementById('price').innerHTML = "Aktueller Preis: " + currentValue + "€"
             });
         }
     </script>
 </head>
-<body>
-
+<body onload="getCurrentPrice()">
+<div id="price">Aktueller Preis:</div>
 <form id="investmentCal">
     <label for="investment">Betrag</label>
     <input type="number" id="investment" name="investment" placeholder="0" min="0" required>
     <button type="button" onclick="calculateCurrenWorth()">berechnen</button>
-    <button type="button" onclick="getCurrentValue()">test</button>
+    <button type="button" onclick="getCurrentPrice()">test</button>
 </form>
 <div id="result"></div>
 <div id="increase"></div>
-<div id="test"></div>
-
 </body>
 </html>
