@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ÖkoWorld ÖkoVision Classic Entwiklung</title>
+    <script src="parsehub/parsehub.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        function calculateCurrenWorth() {
+            var result, investment;
+            var currentValue = 241.47;
+            investment = document.getElementById('investment').value;
+            result = (investment/231) * currentValue;
+            document.getElementById('result').innerHTML = "aktueller Wert: " + result.toFixed(2)+"€";
+            document.getElementById('increase').innerHTML = "Gewinn: " + (result-investment).toFixed(2)+"€";
+
+        }
+        function initParseHub() {
+            var ParseHub = require('parsehub');
+            var api = new ParseHub(t3exedkXFroV);
+        }
+
+        function getCurrentWorth() {
+            api.runJob({ token: 'tjLsiuri4dwR' }, function(err, runToken)
+            {
+                console.log(runToken);
+            });
+        }
+    </script>
+</head>
+<body>
+
+<form id="investmentCal">
+    <label for="investment">Betrag</label>
+    <input type="number" id="investment" name="investment" placeholder="0" min="0" required>
+    <button type="button" onclick="calculateCurrenWorth()">berechnen</button>
+    <button type="button" onclick="getCurrentValue()">test</button>
+</form>
+<div id="result"></div>
+<div id="increase"></div>
+<div id="test"></div>
+
+</body>
+</html>
