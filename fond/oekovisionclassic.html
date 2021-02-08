@@ -7,11 +7,14 @@
     <script>
         var currentValue;
         function calculateCurrenWorth() {
-            var result, investment;
+            var result, investment, fees;
             //console.log("currentValue: " + currentValue);
             investment = document.getElementById('investment').value;
-            result = (investment/231) * currentValue;
-            document.getElementById('result').innerHTML = "aktueller Wert: " + result.toFixed(2)+"€";
+            fees = investment * 0.05;
+            //console.log(fees);
+            //console.log(investment - fees);
+            result = ((investment - fees)/231) * currentValue;
+            document.getElementById('result').innerHTML = "Aktueller Wert: " + result.toFixed(2)+"€";
             document.getElementById('increase').innerHTML = "Gewinn: " + (result-investment).toFixed(2)+"€";
 
         }
@@ -29,23 +32,26 @@
                 }
             };
 
+
             $.ajax(settings).done(function (response) {
                 //console.log(response);
                 //console.log(response.quoteResponse.result[0].regularMarketPrice);
                 currentValue = response.quoteResponse.result[0].regularMarketPrice;
-                document.getElementById('price').innerHTML = "Aktueller Preis: " + currentValue + "€"
+                document.getElementById('price').innerHTML = "Aktueller Preis: " + currentValue + "€";
+                document.getElementById('test').setAttribute("style", "visibility: visible;");
             });
         }
     </script>
 </head>
 <body onload="getCurrentPrice()">
 <div id="price">Aktueller Preis:</div>
+<div id="test" style="visibility:hidden;">
 <form id="investmentCal">
     <label for="investment">Betrag</label>
     <input type="number" id="investment" name="investment" placeholder="0" min="0" required>
     <button type="button" onclick="calculateCurrenWorth()">berechnen</button>
-    <button type="button" onclick="getCurrentPrice()">test</button>
 </form>
+</div>
 <div id="result"></div>
 <div id="increase"></div>
 </body>
